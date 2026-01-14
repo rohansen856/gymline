@@ -99,7 +99,7 @@ A modern, full-stack fitness tracking application built with Next.js 16, TypeScr
 
 ### Prerequisites
 - Node.js 18+ or 20+
-- pnpm (recommended) or npm
+- npm (recommended) or npm
 - PostgreSQL database (Neon account recommended)
 
 ### Installation
@@ -112,7 +112,7 @@ A modern, full-stack fitness tracking application built with Next.js 16, TypeScr
 
 2. **Install dependencies**
    ```bash
-   pnpm install
+   npm install
    # or
    npm install
    ```
@@ -129,15 +129,15 @@ A modern, full-stack fitness tracking application built with Next.js 16, TypeScr
 4. **Initialize the database**
    ```bash
    # Run the schema initialization
-   pnpm tsx scripts/init-db.ts
+   npm tsx scripts/init-db.ts
    
    # Seed the database with initial data
-   pnpm tsx scripts/seed-db.ts
+   npm tsx scripts/seed-db.ts
    ```
 
 5. **Start the development server**
    ```bash
-   pnpm dev
+   npm dev
    # or
    npm run dev
    ```
@@ -326,19 +326,19 @@ gymline/
 
 ```bash
 # Development
-pnpm dev          # Start development server with Turbopack
+npm dev          # Start development server with Turbopack
 
 # Production
-pnpm build        # Build for production
-pnpm start        # Start production server
+npm build        # Build for production
+npm start        # Start production server
 
 # Code Quality
-pnpm lint         # Run ESLint
+npm lint         # Run ESLint
 
 # Database
-pnpm tsx scripts/init-db.ts    # Initialize database schema
-pnpm tsx scripts/seed-db.ts    # Seed database with data
-pnpm tsx scripts/test-db.ts    # Test database connection
+npm tsx scripts/init-db.ts    # Initialize database schema
+npm tsx scripts/seed-db.ts    # Seed database with data
+npm tsx scripts/test-db.ts    # Test database connection
 ```
 
 ## 🚀 Deployment
@@ -352,7 +352,7 @@ pnpm tsx scripts/test-db.ts    # Test database connection
 ### Other Platforms
 - Ensure Node.js 18+ runtime
 - Set `DATABASE_URL` environment variable
-- Run `pnpm build` then `pnpm start`
+- Run `npm build` then `npm start`
 
 ## 📝 License
 
