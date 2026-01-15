@@ -33,11 +33,11 @@ export default function PrinterPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 print:grid-cols-4">
           <div>
             <p className="text-xs text-muted-foreground font-semibold">NAME</p>
-            <p className="text-lg font-bold">Alex</p>
+            <p className="text-lg font-bold">Rohan</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground font-semibold">WEIGHT (kg)</p>
-            <p className="text-lg font-bold">75.5</p>
+            <p className="text-lg font-bold">63.5</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground font-semibold">GOAL</p>
