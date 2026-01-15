@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,10 +10,10 @@ import { Target } from "lucide-react"
 
 export default function SettingsPage() {
   const [profile, setProfile] = useState({
-    name: "Alex",
-    age: 28,
-    heightCm: 180,
-    weightKg: 75.5,
+    name: "",
+    age: 25,
+    heightCm: 170,
+    weightKg: 70,
     goal: "Athletic + Lean Strength",
   })
 
@@ -26,6 +26,42 @@ export default function SettingsPage() {
 
   const [theme, setTheme] = useState("dark")
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [isNewUser, setIsNewUser] = useState(false)
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch("/api/user")
+        if (res.ok) {
+          const data = await res.json()
+          if (data) {
+            setProfile({
+              name: data.name || "",
+              age: data.age || 25,
+              heightCm: data.height_cm || 170,
+              weightKg: parseFloat(data.weight_kg) || 70,
+              goal: data.goal || "Athletic + Lean Strength",
+            })
+            setTargets({
+              proteinTarget: data.protein_target || 140,
+              waterTargetLiters: parseFloat(data.water_target_liters) || 3,
+              stepsTarget: data.steps_target || 8000,
+              sleepTargetHours: parseFloat(data.sleep_target_hours) || 7.5,
+            })
+            setIsNewUser(false)
+          } else {
+            setIsNewUser(true)
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error)
+      } finally {
+        setInitialLoading(false)
+      }
+    }
+    fetchUserData()
+  }, [])
 
   const handleProfileChange = (field: string, value: any) => {
     setProfile((prev) => ({ ...prev, [field]: value }))
@@ -55,7 +91,11 @@ export default function SettingsPage() {
       })
 
       if (!res.ok) throw new Error("Failed to update")
-      alert("Profile updated successfully!")
+      const updatedData = await res.json()
+      if (isNewUser) {
+        setIsNewUser(false)
+      }
+      alert("Profile saved successfully!")
     } catch (error) {
       console.error("Error updating profile:", error)
       alert("Failed to update profile")
@@ -86,8 +126,18 @@ export default function SettingsPage() {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold mb-2">Settings</h1>
-        <p className="text-muted-foreground">Manage your profile and preferences</p>
+        <p className="text-muted-foreground">
+          {isNewUser ? "Create your profile to get started" : "Manage your profile and preferences"}
+        </p>
       </div>
+
+      {isNewUser && (
+        <Card className="p-6 bg-primary/10 border-primary">
+          <p className="text-sm">
+            👋 Welcome! Please fill in your details below to create your profile.
+          </p>
+        </Card>
+      )}
 
       <Card className="p-6 bg-card border-border">
         <h2 className="font-bold mb-4 flex items-center gap-2">

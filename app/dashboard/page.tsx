@@ -24,7 +24,9 @@ export default function DashboardPage() {
         const userRes = await fetch("/api/user")
         if (userRes.ok) {
           const userData = await userRes.json()
-          setUserProfile(userData)
+          if (userData) {
+            setUserProfile(userData)
+          }
         }
 
         // Fetch daily habits for weight trend and adherence
@@ -114,7 +116,34 @@ export default function DashboardPage() {
     fetchData()
   }, []) // Empty dependency array - only run once on mount
 
-  if (loading || !userProfile || !weekProgress) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!userProfile) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Card className="p-8 max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4">Welcome to GymLine!</h2>
+          <p className="text-muted-foreground mb-6">
+            Let's get started by setting up your profile.
+          </p>
+          <Link href="/settings">
+            <Button size="lg">Create Profile</Button>
+          </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!weekProgress) {
     return (
       <div className="p-6">
         <div className="animate-pulse">Loading dashboard...</div>
