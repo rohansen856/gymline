@@ -279,7 +279,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-center">
             <div className="text-center">
               <p className="text-4xl font-bold text-primary">{weekProgress.proteinAverage}g</p>
-              <p className="text-sm text-muted-foreground">of {userProfile.proteinTarget}g target</p>
+              <p className="text-sm text-muted-foreground">of {userProfile.protein_target || 0}g target</p>
             </div>
           </div>
         </Card>
@@ -289,7 +289,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-center">
             <div className="text-center">
               <p className="text-4xl font-bold text-secondary">{weekProgress.waterAverage}L</p>
-              <p className="text-sm text-muted-foreground">of {userProfile.waterTargetLiters}L target</p>
+              <p className="text-sm text-muted-foreground">of {userProfile.water_target_liters || 0}L target</p>
             </div>
           </div>
         </Card>
@@ -299,7 +299,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-center">
             <div className="text-center">
               <p className="text-4xl font-bold text-accent">{weekProgress.sleepAverage}h</p>
-              <p className="text-sm text-muted-foreground">of {userProfile.sleepTargetHours}h target</p>
+              <p className="text-sm text-muted-foreground">of {userProfile.sleep_target_hours || 0}h target</p>
             </div>
           </div>
         </Card>
@@ -313,19 +313,19 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">Protein</p>
-            <p className="text-lg font-bold text-primary">{userProfile.protein_target}g+</p>
+            <p className="text-lg font-bold text-primary">{userProfile.protein_target || 140}g+</p>
           </div>
           <div>
             <p className="text-muted-foreground">Water</p>
-            <p className="text-lg font-bold text-secondary">2.5-4L</p>
+            <p className="text-lg font-bold text-secondary">{userProfile.water_target_liters || 3}L</p>
           </div>
           <div>
             <p className="text-muted-foreground">Steps</p>
-            <p className="text-lg font-bold text-accent">6k-10k</p>
+            <p className="text-lg font-bold text-accent">{userProfile.steps_target ? (userProfile.steps_target >= 1000 ? (userProfile.steps_target / 1000).toFixed(0) + 'k' : userProfile.steps_target) : '8k'}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Sleep</p>
-            <p className="text-lg font-bold text-primary">{userProfile.sleep_target_hours}+ hrs</p>
+            <p className="text-lg font-bold text-primary">{userProfile.sleep_target_hours || 7.5}+ hrs</p>
           </div>
         </div>
       </Card>
