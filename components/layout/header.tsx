@@ -13,7 +13,7 @@ export function Header() {
         <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           <Menu size={24} />
         </Button>
-        <h2 className="text-xl font-bold text-primary hidden sm:block">LeanForge</h2>
+        <h2 className="text-xl font-bold text-primary hidden sm:block">GymLine</h2>
       </div>
       <div className="text-sm text-muted">💪 Build Your Best Self</div>
     </header>

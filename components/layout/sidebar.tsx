@@ -19,7 +19,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-card border-r border-border p-6 no-print hidden lg:block overflow-y-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary">LeanForge</h1>
+        <h1 className="text-2xl font-bold text-primary">GymLine</h1>
         <p className="text-sm text-muted-foreground">12-Week Transformation</p>
       </div>
 

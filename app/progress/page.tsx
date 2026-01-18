@@ -21,6 +21,13 @@ export default function ProgressPage() {
   const [weightData, setWeightData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Adherence heatmap data (0.0 to 1.0 for each day)
+  const adherenceHeatmap: number[][] = [
+    [0.75, 1.0, 0.5, 0.8, 1.0, 0.9, 0.6], // Week 1
+    [0.9, 0.8, 0.7, 1.0, 0.85, 0.95, 0.5], // Week 2
+    [0.8, 0.9, 0.6, 0.85, 0.9, 1.0, 0.7], // Week 3
+  ]
+
   useEffect(() => {
     const fetchProgress = async () => {
       try {

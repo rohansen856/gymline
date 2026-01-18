@@ -43,7 +43,7 @@ export function Sidebar() {
               L
             </div>
             <div>
-              <h1 className="font-bold text-lg text-foreground">LeanForge</h1>
+              <h1 className="font-bold text-lg text-foreground">GymLine</h1>
               <p className="text-xs text-muted-foreground">12-Week Transform</p>
             </div>
           </Link>
@@ -75,7 +75,7 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="p-4 border-t border-border bg-muted/30 rounded-t">
-          <p className="text-xs text-muted-foreground text-center">LeanForge v1.0</p>
+          <p className="text-xs text-muted-foreground text-center">GymLine v1.0</p>
           <p className="text-xs text-muted-foreground text-center">PostgreSQL Backed</p>
         </div>
       </aside>

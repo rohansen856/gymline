@@ -12,7 +12,7 @@ const outfit = Outfit({
 })
 
 export const metadata: Metadata = {
-  title: "LeanForge - Gym & Diet Tracker",
+  title: "GymLine - Gym & Diet Tracker",
   description: "Transform your fitness with AI-powered gym and diet tracking",
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],

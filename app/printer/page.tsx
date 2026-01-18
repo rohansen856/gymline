@@ -24,7 +24,7 @@ export default function PrinterPage() {
       <div className="print:block space-y-6">
         {/* Header */}
         <div className="border-b-2 border-slate-800 pb-4 mb-6">
-          <h1 className="text-4xl font-bold mb-1">LeanForge Weekly Tracker</h1>
+          <h1 className="text-4xl font-bold mb-1">GymLine Weekly Tracker</h1>
           <p className="text-lg text-muted-foreground">Week 2 of 12 - Transformation Log</p>
           <p className="text-sm text-muted-foreground mt-2">Date Range: Monday to Sunday</p>
         </div>
@@ -163,7 +163,7 @@ export default function PrinterPage() {
 
         {/* Footer */}
         <div className="mt-8 pt-4 border-t border-slate-700 text-xs text-muted-foreground text-center print:text-sm">
-          <p>LeanForge v1.0 - Your 12-Week Fitness Transformation Companion</p>
+          <p>GymLine v1.0 - Your 12-Week Fitness Transformation Companion</p>
           <p>Printed: {new Date().toLocaleDateString()}</p>
         </div>
       </div>

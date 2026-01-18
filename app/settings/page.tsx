@@ -111,7 +111,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = "leanforge-backup.json"
+    a.download = "gymline-backup.json"
     a.click()
     alert("Data exported successfully!")
   }
@@ -305,9 +305,9 @@ export default function SettingsPage() {
       </Card>
 
       <Card className="p-6 bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700">
-        <h2 className="font-bold mb-2">About LeanForge</h2>
+        <h2 className="font-bold mb-2">About GymLine</h2>
         <p className="text-sm text-muted-foreground">
-          LeanForge v1.0 - Your personal 12-week fitness transformation companion. Built with Next.js + TypeScript +
+          GymLine v1.0 - Your personal 12-week fitness transformation companion. Built with Next.js + TypeScript +
           Tailwind CSS + PostgreSQL.
         </p>
         <div className="mt-4 flex items-center gap-2">
