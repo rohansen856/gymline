@@ -4,6 +4,7 @@ import { Outfit } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Sidebar } from "@/components/sidebar"
+import { OfflineIndicator } from "@/components/offline-indicator"
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default function RootLayout({
           <Sidebar />
           <main className="flex-1 lg:ml-64 w-full">{children}</main>
         </div>
+        <OfflineIndicator />
         <Analytics />
       </body>
     </html>

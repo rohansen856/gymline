@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db"
+import { executeWithRetry } from "@/lib/db-retry"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
@@ -6,11 +7,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { workout_log_id, exercise_name, set_number, weight, reps, rir } = body
 
-    const result = await sql`
-      INSERT INTO exercise_set_logs (workout_log_id, exercise_name, set_number, weight, reps, rir)
-      VALUES (${workout_log_id}, ${exercise_name}, ${set_number}, ${weight}, ${reps}, ${rir})
-      RETURNING *
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        INSERT INTO exercise_set_logs (workout_log_id, exercise_name, set_number, weight, reps, rir)
+        VALUES (${workout_log_id}, ${exercise_name}, ${set_number}, ${weight}, ${reps}, ${rir})
+        RETURNING *
+      `,
+      "Save exercise log"
+    )
 
     return NextResponse.json(result[0])
   } catch (error) {
@@ -24,9 +28,12 @@ export async function GET(req: NextRequest) {
     const workoutLogId = req.nextUrl.searchParams.get("workoutLogId")
 
     if (workoutLogId) {
-      const result = await sql`
-        SELECT * FROM exercise_set_logs WHERE workout_log_id = ${workoutLogId} ORDER BY exercise_name, set_number
-      `
+      const result = await executeWithRetry(
+        () => sql`
+          SELECT * FROM exercise_set_logs WHERE workout_log_id = ${workoutLogId} ORDER BY exercise_name, set_number
+        `,
+        "Fetch exercise logs"
+      )
       return NextResponse.json(result)
     }
 
@@ -45,9 +52,12 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Exercise log ID required" }, { status: 400 })
     }
 
-    await sql`
-      DELETE FROM exercise_set_logs WHERE id = ${id}
-    `
+    await executeWithRetry(
+      () => sql`
+        DELETE FROM exercise_set_logs WHERE id = ${id}
+      `,
+      "Delete exercise log"
+    )
 
     return NextResponse.json({ success: true })
   } catch (error) {

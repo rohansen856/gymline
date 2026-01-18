@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db"
+import { executeWithRetry } from "@/lib/db-retry"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
@@ -6,15 +7,21 @@ export async function GET(req: NextRequest) {
     const workoutPlanId = req.nextUrl.searchParams.get("workoutPlanId")
 
     if (workoutPlanId) {
-      const result = await sql`
-        SELECT * FROM exercises WHERE workout_plan_id = ${workoutPlanId} ORDER BY order_index
-      `
+      const result = await executeWithRetry(
+        () => sql`
+          SELECT * FROM exercises WHERE workout_plan_id = ${workoutPlanId} ORDER BY order_index
+        `,
+        "Fetch exercises by plan"
+      )
       return NextResponse.json(result)
     }
 
-    const result = await sql`
-      SELECT * FROM exercises ORDER BY workout_plan_id, order_index
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        SELECT * FROM exercises ORDER BY workout_plan_id, order_index
+      `,
+      "Fetch all exercises"
+    )
     return NextResponse.json(result)
   } catch (error) {
     console.error("Error fetching exercises:", error)
@@ -27,11 +34,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { workout_plan_id, name, sets_target, reps_target, notes, order_index } = body
 
-    const result = await sql`
-      INSERT INTO exercises (workout_plan_id, name, sets_target, reps_target, notes, order_index)
-      VALUES (${workout_plan_id}, ${name}, ${sets_target}, ${reps_target}, ${notes || null}, ${order_index || 0})
-      RETURNING *
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        INSERT INTO exercises (workout_plan_id, name, sets_target, reps_target, notes, order_index)
+        VALUES (${workout_plan_id}, ${name}, ${sets_target}, ${reps_target}, ${notes || null}, ${order_index || 0})
+        RETURNING *
+      `,
+      "Create exercise"
+    )
 
     return NextResponse.json(result[0])
   } catch (error) {
@@ -49,16 +59,19 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Exercise ID required" }, { status: 400 })
     }
 
-    const result = await sql`
-      UPDATE exercises SET
-        name = ${name},
-        sets_target = ${sets_target},
-        reps_target = ${reps_target},
-        notes = ${notes || null},
-        order_index = ${order_index || 0}
-      WHERE id = ${id}
-      RETURNING *
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        UPDATE exercises SET
+          name = ${name},
+          sets_target = ${sets_target},
+          reps_target = ${reps_target},
+          notes = ${notes || null},
+          order_index = ${order_index || 0}
+        WHERE id = ${id}
+        RETURNING *
+      `,
+      "Update exercise"
+    )
 
     return NextResponse.json(result[0])
   } catch (error) {
@@ -75,9 +88,12 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Exercise ID required" }, { status: 400 })
     }
 
-    await sql`
-      DELETE FROM exercises WHERE id = ${id}
-    `
+    await executeWithRetry(
+      () => sql`
+        DELETE FROM exercises WHERE id = ${id}
+      `,
+      "Delete exercise"
+    )
 
     return NextResponse.json({ success: true })
   } catch (error) {

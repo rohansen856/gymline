@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db"
+import { executeWithRetry } from "@/lib/db-retry"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
@@ -6,15 +7,21 @@ export async function GET(req: NextRequest) {
     const logDate = req.nextUrl.searchParams.get("date")
 
     if (logDate) {
-      const result = await sql`
-        SELECT * FROM workout_logs WHERE user_id = 1 AND log_date = ${logDate}
-      `
+      const result = await executeWithRetry(
+        () => sql`
+          SELECT * FROM workout_logs WHERE user_id = 1 AND log_date = ${logDate}
+        `,
+        "Fetch workout log by date"
+      )
       return NextResponse.json(result[0] || null)
     }
 
-    const result = await sql`
-      SELECT * FROM workout_logs WHERE user_id = 1 ORDER BY log_date DESC LIMIT 30
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        SELECT * FROM workout_logs WHERE user_id = 1 ORDER BY log_date DESC LIMIT 30
+      `,
+      "Fetch workout logs"
+    )
     return NextResponse.json(result)
   } catch (error) {
     console.error("Error fetching workout logs:", error)
@@ -27,17 +34,20 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { log_date, day_type, cardio_done, cardio_duration_min, notes } = body
 
-    const result = await sql`
-      INSERT INTO workout_logs (user_id, log_date, day_type, cardio_done, cardio_duration_min, notes)
-      VALUES (1, ${log_date}, ${day_type}, ${cardio_done}, ${cardio_duration_min}, ${notes})
-      ON CONFLICT (user_id, log_date) DO UPDATE SET
-        day_type = ${day_type},
-        cardio_done = ${cardio_done},
-        cardio_duration_min = ${cardio_duration_min},
-        notes = ${notes},
-        updated_at = CURRENT_TIMESTAMP
-      RETURNING *
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        INSERT INTO workout_logs (user_id, log_date, day_type, cardio_done, cardio_duration_min, notes)
+        VALUES (1, ${log_date}, ${day_type}, ${cardio_done}, ${cardio_duration_min}, ${notes})
+        ON CONFLICT (user_id, log_date) DO UPDATE SET
+          day_type = ${day_type},
+          cardio_done = ${cardio_done},
+          cardio_duration_min = ${cardio_duration_min},
+          notes = ${notes},
+          updated_at = CURRENT_TIMESTAMP
+        RETURNING *
+      `,
+      "Save workout log"
+    )
 
     return NextResponse.json(result[0])
   } catch (error) {
@@ -54,9 +64,12 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Date required" }, { status: 400 })
     }
 
-    await sql`
-      DELETE FROM workout_logs WHERE user_id = 1 AND log_date = ${logDate}
-    `
+    await executeWithRetry(
+      () => sql`
+        DELETE FROM workout_logs WHERE user_id = 1 AND log_date = ${logDate}
+      `,
+      "Delete workout log"
+    )
 
     return NextResponse.json({ success: true })
   } catch (error) {

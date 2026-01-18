@@ -1,13 +1,17 @@
 import { sql } from "@/lib/db"
+import { executeWithRetry } from "@/lib/db-retry"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
   try {
     const userId = req.nextUrl.searchParams.get("userId") || "1"
 
-    const result = await sql`
-      SELECT * FROM workout_plans WHERE user_id = ${userId} ORDER BY day_of_week
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        SELECT * FROM workout_plans WHERE user_id = ${userId} ORDER BY day_of_week
+      `,
+      "Fetch workout plans"
+    )
     return NextResponse.json(result)
   } catch (error) {
     console.error("Error fetching workout plans:", error)
@@ -20,11 +24,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { user_id, day_of_week, day_name, workout_type } = body
 
-    const result = await sql`
-      INSERT INTO workout_plans (user_id, day_of_week, day_name, workout_type)
-      VALUES (${user_id || 1}, ${day_of_week}, ${day_name}, ${workout_type})
-      RETURNING *
-    `
+    const result = await executeWithRetry(
+      () => sql`
+        INSERT INTO workout_plans (user_id, day_of_week, day_name, workout_type)
+        VALUES (${user_id || 1}, ${day_of_week}, ${day_name}, ${workout_type})
+        RETURNING *
+      `,
+      "Create workout plan"
+    )
 
     return NextResponse.json(result[0])
   } catch (error) {
@@ -41,9 +48,12 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Workout plan ID required" }, { status: 400 })
     }
 
-    await sql`
-      DELETE FROM workout_plans WHERE id = ${id}
-    `
+    await executeWithRetry(
+      () => sql`
+        DELETE FROM workout_plans WHERE id = ${id}
+      `,
+      "Delete workout plan"
+    )
 
     return NextResponse.json({ success: true })
   } catch (error) {
