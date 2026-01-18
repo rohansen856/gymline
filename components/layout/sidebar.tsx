@@ -2,14 +2,16 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BarChart3, Dumbbell, Apple, TrendingUp, Calendar, Settings } from "lucide-react"
+import { BarChart3, Dumbbell, Apple, TrendingUp, Calendar, Settings, Ruler, Printer } from "lucide-react"
 
 const MENU_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
   { href: "/workouts", label: "Workouts", icon: Dumbbell },
   { href: "/diet", label: "Diet", icon: Apple },
+  { href: "/body-measurements", label: "Body Measurements", icon: Ruler },
   { href: "/progress", label: "Progress", icon: TrendingUp },
   { href: "/weekly-tracker", label: "Weekly Tracker", icon: Calendar },
+  { href: "/printer", label: "Print Tracker", icon: Printer },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 

@@ -1,6 +1,6 @@
 // IndexedDB utility for offline data storage
 const DB_NAME = 'gymline-offline';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Incremented version for new store
 
 // Store names
 export const STORES = {
@@ -10,6 +10,7 @@ export const STORES = {
   FOOD_QUALITY: 'foodQuality',
   WORKOUT_LOGS: 'workoutLogs',
   WORKOUT_PLANS: 'workoutPlans',
+  BODY_MEASUREMENTS: 'bodyMeasurements',
   PENDING_SYNC: 'pendingSync',
 } as const;
 

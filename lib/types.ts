@@ -74,3 +74,27 @@ export interface FoodQualityChecklist {
   softDrinkAvoided: boolean
   junkControlled: boolean
 }
+
+export interface BodyMeasurement {
+  id: number
+  user_id: number
+  measurement_date: string
+  weight_kg?: number
+  chest_cm?: number
+  waist_cm?: number
+  hips_cm?: number
+  bicep_left_cm?: number
+  bicep_right_cm?: number
+  forearm_left_cm?: number
+  forearm_right_cm?: number
+  thigh_left_cm?: number
+  thigh_right_cm?: number
+  calf_left_cm?: number
+  calf_right_cm?: number
+  neck_cm?: number
+  shoulders_cm?: number
+  body_fat_percentage?: number
+  notes?: string
+  created_at: string
+  updated_at: string
+}
