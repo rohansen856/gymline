@@ -18,6 +18,25 @@ function getLocalDayIndex() {
   return localDay === 0 ? 6 : localDay - 1
 }
 
+// Get dates for the current week (Monday-Sunday)
+function getWeekDates() {
+  const now = new Date()
+  const currentDay = now.getDay()
+  const monday = new Date(now)
+  
+  // Calculate days to subtract to get to Monday
+  const daysToMonday = currentDay === 0 ? 6 : currentDay - 1
+  monday.setDate(now.getDate() - daysToMonday)
+  
+  const weekDates = []
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(monday)
+    date.setDate(monday.getDate() + i)
+    weekDates.push(date.toISOString().split('T')[0])
+  }
+  return weekDates
+}
+
 export default function WorkoutsPage() {
   const [selectedDay, setSelectedDay] = useState(getLocalDayIndex())
   const [workoutPlans, setWorkoutPlans] = useState<any[]>([])
@@ -28,10 +47,13 @@ export default function WorkoutsPage() {
   const [restDayData, setRestDayData] = useState<any>({})
   const [loading, setLoading] = useState(false)
   const [loadingPlans, setLoadingPlans] = useState(true)
+  const [savedWorkoutLogs, setSavedWorkoutLogs] = useState<any>({})
+  const weekDates = getWeekDates()
 
   useEffect(() => {
     setSelectedDay(getLocalDayIndex())
     fetchWorkoutPlans()
+    fetchSavedWorkouts()
   }, [])
 
   const fetchWorkoutPlans = async () => {
@@ -45,6 +67,64 @@ export default function WorkoutsPage() {
       console.error("Error fetching workout plans:", error)
     } finally {
       setLoadingPlans(false)
+    }
+  }
+
+  const fetchSavedWorkouts = async () => {
+    try {
+      // Fetch workout logs for this week
+      for (let i = 0; i < weekDates.length; i++) {
+        const date = weekDates[i]
+        
+        // Fetch workout log for this date
+        const logRes = await fetch(`/api/workout-logs?date=${date}`)
+        if (logRes.ok) {
+          const workoutLogData = await logRes.json()
+          
+          if (workoutLogData) {
+            // Store the workout log
+            setSavedWorkoutLogs((prev: any) => ({
+              ...prev,
+              [i]: workoutLogData
+            }))
+            
+            // Populate cardio and notes
+            setCardio((prev: any) => ({
+              ...prev,
+              [i]: workoutLogData.cardio_done
+            }))
+            setCardioDuration((prev: any) => ({
+              ...prev,
+              [i]: workoutLogData.cardio_duration_min || ''
+            }))
+            setNotes((prev: any) => ({
+              ...prev,
+              [workoutLogData.id]: workoutLogData.notes || ''
+            }))
+            
+            // Fetch exercise logs for this workout
+            const exerciseRes = await fetch(`/api/exercise-logs?workoutLogId=${workoutLogData.id}`)
+            if (exerciseRes.ok) {
+              const exerciseLogs = await exerciseRes.json()
+              
+              // Populate exercise set data
+              exerciseLogs.forEach((log: any) => {
+                const key = `${log.exercise_name}-${log.set_number}`
+                setWorkoutLog((prev: any) => ({
+                  ...prev,
+                  [key]: {
+                    weight: log.weight || '',
+                    reps: log.reps || '',
+                    rir: log.rir || ''
+                  }
+                }))
+              })
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching saved workouts:", error)
     }
   }
 
@@ -178,16 +258,28 @@ export default function WorkoutsPage() {
             })}
           </TabsList>
 
-          {workoutPlans.map((workout) => (
-            <TabsContent key={workout.id} value={(workout.day_of_week - 1).toString()} className="space-y-4 mt-4">
+          {workoutPlans.map((workout) => {
+            // Convert day_of_week to tab index (0-6 for Mon-Sun)
+            // day_of_week: 1=Mon, 2=Tue, ..., 6=Sat, 0=Sun
+            const tabValue = workout.day_of_week === 0 ? 6 : workout.day_of_week - 1
+            
+            return (
+            <TabsContent key={workout.id} value={tabValue.toString()} className="space-y-4 mt-4">
               <div className={`p-4 rounded-lg ${getDayColor(workout.workout_type)}`}>
                 <h2 className="text-2xl font-bold mb-1">{workout.day_name.toUpperCase()} — {workout.workout_type}</h2>
                 <p className="text-xs text-muted-foreground">
-                  {(workout.day_of_week - 1) === getLocalDayIndex() && <span className="text-green-400 font-semibold">● Today</span>}
+                  {tabValue === getLocalDayIndex() && <span className="text-green-400 font-semibold">● Today • </span>}
+                  <span className="font-medium">
+                    {new Date(weekDates[tabValue]).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })}
+                  </span>
                 </p>
               </div>
 
-              {(workout.workout_type === "Rest" || workout.workout_type === "Full Rest") && (
+              {(workout.workout_type === "Rest" || workout.workout_type === "Full Rest" || workout.workout_type === "Rest / Active Recovery") && (
                 <div className="space-y-4">
                   <Card className="p-4 bg-card border-border">
                     <h3 className="font-bold mb-3">Recovery Activities</h3>
@@ -264,7 +356,7 @@ export default function WorkoutsPage() {
                 </div>
               )}
 
-              {workout.workout_type !== "Rest" && workout.workout_type !== "Full Rest" && (
+              {workout.workout_type !== "Rest" && workout.workout_type !== "Full Rest" && workout.workout_type !== "Rest / Active Recovery" && (
                 <div className="space-y-4">
                   {workout.exercises && workout.exercises.length > 0 ? (
                     workout.exercises.map((exercise: any, exIdx: number) => (
@@ -416,10 +508,11 @@ export default function WorkoutsPage() {
                 disabled={loading}
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-4 font-bold text-lg"
               >
-                {loading ? "Saving..." : `✅ Save ${workout.dayName} Workout`}
+                {loading ? "Saving..." : `✅ Save ${workout.day_name} Workout`}
               </Button>
             </TabsContent>
-          ))}
+            )
+          })}
         </Tabs>
       </Card>
 

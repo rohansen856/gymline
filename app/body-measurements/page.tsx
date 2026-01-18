@@ -479,6 +479,179 @@ export default function BodyMeasurementsPage() {
         </CardContent>
       </Card>
 
+      {/* Last Measurement Details */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Last Recorded Measurement</CardTitle>
+          <CardDescription>
+            {latestMeasurement 
+              ? `Recorded on ${new Date(latestMeasurement.measurement_date).toLocaleDateString("en-IN", { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}`
+              : "No previous measurements found"
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!latestMeasurement ? (
+            <div className="text-center py-8 bg-muted/30 rounded-lg border-2 border-dashed">
+              <p className="text-lg font-medium text-muted-foreground mb-2">⚠️ No Prior Data</p>
+              <p className="text-sm text-muted-foreground">
+                You haven't recorded any measurements yet. Fill out the form above to get started!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Primary Metrics */}
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3">PRIMARY METRICS</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {latestMeasurement.weight_kg && (
+                    <div className="p-3 border rounded-lg bg-card">
+                      <p className="text-xs text-muted-foreground mb-1">Weight</p>
+                      <p className="text-xl font-bold">{latestMeasurement.weight_kg} <span className="text-sm font-normal text-muted-foreground">kg</span></p>
+                    </div>
+                  )}
+                  {latestMeasurement.body_fat_percentage && (
+                    <div className="p-3 border rounded-lg bg-card">
+                      <p className="text-xs text-muted-foreground mb-1">Body Fat</p>
+                      <p className="text-xl font-bold">{latestMeasurement.body_fat_percentage} <span className="text-sm font-normal text-muted-foreground">%</span></p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Upper Body */}
+              {(latestMeasurement.chest_cm || latestMeasurement.shoulders_cm || latestMeasurement.neck_cm) && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">UPPER BODY</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {latestMeasurement.chest_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Chest</p>
+                        <p className="text-xl font-bold">{latestMeasurement.chest_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.shoulders_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Shoulders</p>
+                        <p className="text-xl font-bold">{latestMeasurement.shoulders_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.neck_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Neck</p>
+                        <p className="text-xl font-bold">{latestMeasurement.neck_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Arms */}
+              {(latestMeasurement.bicep_left_cm || latestMeasurement.bicep_right_cm || latestMeasurement.forearm_left_cm || latestMeasurement.forearm_right_cm) && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">ARMS</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {latestMeasurement.bicep_left_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Bicep Left</p>
+                        <p className="text-xl font-bold">{latestMeasurement.bicep_left_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.bicep_right_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Bicep Right</p>
+                        <p className="text-xl font-bold">{latestMeasurement.bicep_right_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.forearm_left_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Forearm Left</p>
+                        <p className="text-xl font-bold">{latestMeasurement.forearm_left_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.forearm_right_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Forearm Right</p>
+                        <p className="text-xl font-bold">{latestMeasurement.forearm_right_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Core & Hips */}
+              {(latestMeasurement.waist_cm || latestMeasurement.hips_cm) && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">CORE & HIPS</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {latestMeasurement.waist_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Waist</p>
+                        <p className="text-xl font-bold">{latestMeasurement.waist_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.hips_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Hips</p>
+                        <p className="text-xl font-bold">{latestMeasurement.hips_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Legs */}
+              {(latestMeasurement.thigh_left_cm || latestMeasurement.thigh_right_cm || latestMeasurement.calf_left_cm || latestMeasurement.calf_right_cm) && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">LEGS</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {latestMeasurement.thigh_left_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Thigh Left</p>
+                        <p className="text-xl font-bold">{latestMeasurement.thigh_left_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.thigh_right_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Thigh Right</p>
+                        <p className="text-xl font-bold">{latestMeasurement.thigh_right_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.calf_left_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Calf Left</p>
+                        <p className="text-xl font-bold">{latestMeasurement.calf_left_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                    {latestMeasurement.calf_right_cm && (
+                      <div className="p-3 border rounded-lg bg-card">
+                        <p className="text-xs text-muted-foreground mb-1">Calf Right</p>
+                        <p className="text-xl font-bold">{latestMeasurement.calf_right_cm} <span className="text-sm font-normal text-muted-foreground">cm</span></p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Notes */}
+              {latestMeasurement.notes && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-2">NOTES</h3>
+                  <div className="p-3 border rounded-lg bg-muted/30">
+                    <p className="text-sm italic">{latestMeasurement.notes}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Latest Measurement Comparison */}
       {latestMeasurement && (
         <Card>

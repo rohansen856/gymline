@@ -6,12 +6,36 @@ export async function GET(req: NextRequest) {
   try {
     const userId = req.nextUrl.searchParams.get("userId") || "1"
 
-    const result = await executeWithRetry(
+    // Fetch workout plans with exercises
+    const workoutPlans = await executeWithRetry(
       () => sql`
         SELECT * FROM workout_plans WHERE user_id = ${userId} ORDER BY day_of_week
       `,
       "Fetch workout plans"
     )
+
+    // Fetch all exercises for these workout plans
+    const workoutPlanIds = workoutPlans.map((plan: any) => plan.id)
+    
+    if (workoutPlanIds.length === 0) {
+      return NextResponse.json([])
+    }
+
+    const exercises = await executeWithRetry(
+      () => sql`
+        SELECT * FROM exercises 
+        WHERE workout_plan_id = ANY(${workoutPlanIds})
+        ORDER BY workout_plan_id, order_index
+      `,
+      "Fetch exercises"
+    )
+
+    // Combine workout plans with their exercises
+    const result = workoutPlans.map((plan: any) => ({
+      ...plan,
+      exercises: exercises.filter((ex: any) => ex.workout_plan_id === plan.id)
+    }))
+
     return NextResponse.json(result)
   } catch (error) {
     console.error("Error fetching workout plans:", error)
