@@ -4,7 +4,14 @@ async function seedData() {
   try {
     console.log('🌱 Seeding database...');
     
-    const sql = neon(process.env.DATABASE_URL!);
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL environment variable is not set!');
+      console.log('\n💡 Please add your database connection string to the .env file:');
+      console.log('   DATABASE_URL="your-neon-connection-string"');
+      process.exit(1);
+    }
+    
+    const sql = neon(process.env.DATABASE_URL);
     
     // Create default user
     const user = await sql`

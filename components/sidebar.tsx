@@ -2,14 +2,16 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Dumbbell, Apple, TrendingUp, Printer, Settings, Menu, X } from "lucide-react"
+import { LayoutDashboard, Dumbbell, Apple, TrendingUp, Printer, Settings, Menu, X, Ruler, Calendar } from "lucide-react"
 import { useState } from "react"
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/workouts", label: "Workouts", icon: Dumbbell },
   { href: "/diet", label: "Diet", icon: Apple },
+  { href: "/body-measurements", label: "Body Measurements", icon: Ruler },
   { href: "/progress", label: "Progress", icon: TrendingUp },
+  { href: "/weekly-tracker", label: "Weekly Tracker", icon: Calendar },
   { href: "/printer", label: "Print Tracker", icon: Printer },
   { href: "/settings", label: "Settings", icon: Settings },
 ]

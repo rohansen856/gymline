@@ -7,6 +7,15 @@ import { useRef } from "react"
 export default function WeeklyTrackerPage() {
   const printRef = useRef<HTMLDivElement>(null)
 
+  const today = new Date()
+  const dayOfWeek = today.getDay()
+  const monday = new Date(today)
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1))
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+
+  const weekRange = `${monday.toLocaleDateString("en-US", { month: "numeric", day: "numeric" })} to ${sunday.toLocaleDateString("en-US", { month: "numeric", day: "numeric" })}`
+
   const handlePrint = () => {
     window.print()
   }
@@ -32,7 +41,7 @@ export default function WeeklyTrackerPage() {
         <div className="break-before-page">
           <div className="border-b-2 border-black pb-4 mb-6">
             <h2 className="text-2xl font-bold">WEEKLY TRAINING TRACKER</h2>
-            <p className="text-sm">Name: ____________ Week #: 2 Date: 1/13 to 1/19</p>
+            <p className="text-sm">Name: ____________ Date: {weekRange}</p>
           </div>
 
           <div className="mb-4 p-3 bg-gray-100 border border-gray-400 rounded">
@@ -152,7 +161,7 @@ export default function WeeklyTrackerPage() {
         <div className="break-before-page">
           <div className="border-b-2 border-black pb-4 mb-6">
             <h2 className="text-2xl font-bold">WEEKLY BODY + DIET TRACKER</h2>
-            <p className="text-sm">Week #: 2 Date: 1/13 to 1/19</p>
+            <p className="text-sm">Date: {weekRange}</p>
           </div>
 
           <div className="mb-4 p-2 bg-gray-100 border border-gray-400 text-xs">

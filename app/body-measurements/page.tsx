@@ -68,9 +68,11 @@ export default function BodyMeasurementsPage() {
     try {
       const response = await fetch("/api/body-measurements?limit=10")
       const data = await response.json()
-      setMeasurements(data)
+      // Ensure data is always an array
+      setMeasurements(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error("Error fetching measurements:", error)
+      setMeasurements([]) // Set empty array on error
       toast({
         title: "Error",
         description: "Failed to load body measurements",

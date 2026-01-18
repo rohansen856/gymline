@@ -101,10 +101,14 @@ export default function DashboardPage() {
           }
         }
 
-        // Get today's workout from seed data
+        // Get today's workout from database
         const today = new Date().getDay()
-        const HARDCODED_WORKOUTS = (await import('@/lib/seed-workouts')).HARDCODED_WORKOUTS
-        setTodayWorkout(HARDCODED_WORKOUTS[today])
+        const plansRes = await fetch("/api/workout-plans")
+        if (plansRes.ok) {
+          const plans = await plansRes.json()
+          const todayPlan = plans.find((p: any) => p.day_of_week === today)
+          setTodayWorkout(todayPlan || null)
+        }
 
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -155,7 +159,7 @@ export default function DashboardPage() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">Welcome back, {userProfile.name}!</h1>
-        <p className="text-muted-foreground text-lg">Week 2 of 12 | Goal: {userProfile.goal}</p>
+        <p className="text-muted-foreground text-lg">Goal: {userProfile.goal}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -209,14 +213,16 @@ export default function DashboardPage() {
           <div className="space-y-3">
             <div className="bg-muted/30 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-semibold">{todayWorkout.dayName} - {todayWorkout.workoutType}</p>
-                <Badge>{todayWorkout.workoutType.includes('Upper') ? 'Upper Body' : todayWorkout.workoutType.includes('Lower') ? 'Lower Body' : todayWorkout.workoutType.includes('Push') ? 'Push' : todayWorkout.workoutType.includes('Pull') ? 'Pull' : todayWorkout.workoutType}</Badge>
+                <p className="font-semibold">{todayWorkout.day_name} - {todayWorkout.workout_type}</p>
+                <Badge>{todayWorkout.workout_type}</Badge>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm mt-3">
-                {todayWorkout.exercises.slice(0, 6).map((ex: any, idx: number) => (
-                  <div key={idx}>• {ex.name} {ex.setsTarget}×{ex.repsTarget}</div>
-                ))}
-              </div>
+              {todayWorkout.exercises && todayWorkout.exercises.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm mt-3">
+                  {todayWorkout.exercises.slice(0, 6).map((ex: any, idx: number) => (
+                    <div key={idx}>• {ex.name} {ex.sets_target}×{ex.reps_target}</div>
+                  ))}
+                </div>
+              )}
               <div className="mt-4 flex gap-2">
                 <Link href="/workouts">
                   <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Log Workout</Button>
@@ -225,7 +231,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <p className="text-muted-foreground">No workout scheduled for today</p>
+          <p className="text-muted-foreground">No workout scheduled for today. Set up your plan in Settings.</p>
         )}
       </Card>
 
