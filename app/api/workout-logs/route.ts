@@ -1,5 +1,6 @@
 import { sql } from "@/lib/db"
 import { executeWithRetry } from "@/lib/db-retry"
+import { validateWorkoutLog, ValidationError } from "@/lib/validation"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
@@ -32,7 +33,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { log_date, day_type, cardio_done, cardio_duration_min, notes } = body
+    
+    // Validate input
+    const validatedData = validateWorkoutLog(body)
+    const { log_date, day_type, cardio_done, cardio_duration_min, notes } = validatedData
 
     const result = await executeWithRetry(
       () => sql`
@@ -51,6 +55,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result[0])
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { error: error.message, field: error.field, code: error.code },
+        { status: 400 }
+      )
+    }
     console.error("Error saving workout log:", error)
     return NextResponse.json({ error: "Failed to save log" }, { status: 500 })
   }

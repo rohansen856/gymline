@@ -90,15 +90,25 @@ export default function SettingsPage() {
         }),
       })
 
-      if (!res.ok) throw new Error("Failed to update")
-      const updatedData = await res.json()
+      const data = await res.json()
+      
+      if (!res.ok) {
+        // Handle validation errors
+        if (data.field) {
+          alert(`Validation Error: ${data.error}`)
+        } else {
+          alert(data.error || "Failed to update profile")
+        }
+        return
+      }
+      
       if (isNewUser) {
         setIsNewUser(false)
       }
       alert("Profile saved successfully!")
     } catch (error) {
       console.error("Error updating profile:", error)
-      alert("Failed to update profile")
+      alert("Failed to update profile. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -149,6 +159,9 @@ export default function SettingsPage() {
             <div>
               <label className="block text-sm font-semibold mb-2">Name</label>
               <Input
+                type="text"
+                maxLength={100}
+                required
                 value={profile.name}
                 onChange={(e) => handleProfileChange("name", e.target.value)}
                 className="bg-slate-700 border-slate-600 text-foreground"
@@ -158,6 +171,8 @@ export default function SettingsPage() {
               <label className="block text-sm font-semibold mb-2">Age</label>
               <Input
                 type="number"
+                min="10"
+                max="120"
                 value={profile.age}
                 onChange={(e) => handleProfileChange("age", Number(e.target.value))}
                 className="bg-slate-700 border-slate-600 text-foreground"
@@ -167,6 +182,9 @@ export default function SettingsPage() {
               <label className="block text-sm font-semibold mb-2">Height (cm)</label>
               <Input
                 type="number"
+                min="50"
+                max="300"
+                step="0.1"
                 value={profile.heightCm}
                 onChange={(e) => handleProfileChange("heightCm", Number(e.target.value))}
                 className="bg-slate-700 border-slate-600 text-foreground"
@@ -176,6 +194,8 @@ export default function SettingsPage() {
               <label className="block text-sm font-semibold mb-2">Weight (kg)</label>
               <Input
                 type="number"
+                min="20"
+                max="300"
                 step="0.1"
                 value={profile.weightKg}
                 onChange={(e) => handleProfileChange("weightKg", Number(e.target.value))}
@@ -185,6 +205,8 @@ export default function SettingsPage() {
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold mb-2">Goal</label>
               <Input
+                type="text"
+                maxLength={200}
                 value={profile.goal}
                 onChange={(e) => handleProfileChange("goal", e.target.value)}
                 className="bg-slate-700 border-slate-600 text-foreground"
@@ -212,6 +234,8 @@ export default function SettingsPage() {
               <label className="block text-sm font-semibold mb-2">Protein Target (g)</label>
               <Input
                 type="number"
+                min="0"
+                max="500"
                 value={targets.proteinTarget}
                 onChange={(e) => handleTargetChange("proteinTarget", Number(e.target.value))}
                 className="bg-slate-700 border-slate-600 text-foreground"
@@ -221,6 +245,8 @@ export default function SettingsPage() {
               <label className="block text-sm font-semibold mb-2">Water Target (L)</label>
               <Input
                 type="number"
+                min="0"
+                max="20"
                 step="0.5"
                 value={targets.waterTargetLiters}
                 onChange={(e) => handleTargetChange("waterTargetLiters", Number(e.target.value))}
@@ -231,6 +257,8 @@ export default function SettingsPage() {
               <label className="block text-sm font-semibold mb-2">Steps Target</label>
               <Input
                 type="number"
+                min="0"
+                max="100000"
                 value={targets.stepsTarget}
                 onChange={(e) => handleTargetChange("stepsTarget", Number(e.target.value))}
                 className="bg-slate-700 border-slate-600 text-foreground"
@@ -240,6 +268,8 @@ export default function SettingsPage() {
               <label className="block text-sm font-semibold mb-2">Sleep Target (h)</label>
               <Input
                 type="number"
+                min="0"
+                max="24"
                 step="0.5"
                 value={targets.sleepTargetHours}
                 onChange={(e) => handleTargetChange("sleepTargetHours", Number(e.target.value))}

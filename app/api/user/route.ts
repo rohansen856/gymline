@@ -1,5 +1,6 @@
 import { sql } from "@/lib/db"
 import { executeWithRetry } from "@/lib/db-retry"
+import { validateString, validateNumber, ValidationError } from "@/lib/validation"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET() {
@@ -26,17 +27,17 @@ export async function GET() {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json()
-    const {
-      name,
-      age,
-      height_cm,
-      weight_kg,
-      goal,
-      protein_target,
-      water_target_liters,
-      steps_target,
-      sleep_target_hours,
-    } = body
+    
+    // Validate user input
+    const name = validateString(body.name, "Name", { required: true, minLength: 1, maxLength: 100 })
+    const age = validateNumber(body.age, "Age", { min: 10, max: 120, allowNull: true })
+    const height_cm = validateNumber(body.height_cm, "Height", { min: 50, max: 300, allowNull: true })
+    const weight_kg = validateNumber(body.weight_kg, "Weight", { min: 20, max: 300, allowNull: true })
+    const goal = validateString(body.goal, "Goal", { maxLength: 200, required: false })
+    const protein_target = validateNumber(body.protein_target, "Protein target", { min: 0, max: 500, allowNull: true })
+    const water_target_liters = validateNumber(body.water_target_liters, "Water target", { min: 0, max: 20, allowNull: true })
+    const steps_target = validateNumber(body.steps_target, "Steps target", { min: 0, max: 100000, allowNull: true })
+    const sleep_target_hours = validateNumber(body.sleep_target_hours, "Sleep target", { min: 0, max: 24, allowNull: true })
 
     // Check if user exists
     const existing = await executeWithRetry(
@@ -80,6 +81,12 @@ export async function PUT(req: NextRequest) {
     )
     return NextResponse.json(updated[0])
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { error: error.message, field: error.field, code: error.code },
+        { status: 400 }
+      )
+    }
     console.error("Error updating user:", error)
     return NextResponse.json({ error: "Failed to update user" }, { status: 500 })
   }

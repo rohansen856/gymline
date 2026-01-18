@@ -115,7 +115,26 @@ export default function BodyMeasurementsPage() {
         body: JSON.stringify(payload),
       })
 
-      if (!response.ok) throw new Error("Failed to save measurement")
+      const data = await response.json()
+      
+      if (!response.ok) {
+        // Handle validation errors
+        if (data.field) {
+          toast({
+            title: "Validation Error",
+            description: data.error,
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: "Error",
+            description: data.error || "Failed to save measurement",
+            variant: "destructive",
+          })
+        }
+        setSaving(false)
+        return
+      }
 
       toast({
         title: "Success",
@@ -198,6 +217,7 @@ export default function BodyMeasurementsPage() {
                 <Input
                   id="measurement_date"
                   type="date"
+                  max={new Date().toISOString().split('T')[0]}
                   value={formData.measurement_date}
                   onChange={(e) => handleChange("measurement_date", e.target.value)}
                   required
@@ -215,6 +235,8 @@ export default function BodyMeasurementsPage() {
                     id="weight_kg"
                     type="number"
                     step="0.1"
+                    min="20"
+                    max="300"
                     placeholder="65.5"
                     value={formData.weight_kg}
                     onChange={(e) => handleChange("weight_kg", e.target.value)}
@@ -226,6 +248,8 @@ export default function BodyMeasurementsPage() {
                     id="body_fat_percentage"
                     type="number"
                     step="0.1"
+                    min="1"
+                    max="60"
                     placeholder="18.5"
                     value={formData.body_fat_percentage}
                     onChange={(e) => handleChange("body_fat_percentage", e.target.value)}
@@ -244,6 +268,8 @@ export default function BodyMeasurementsPage() {
                     id="chest_cm"
                     type="number"
                     step="0.1"
+                    min="30"
+                    max="200"
                     placeholder="95.0"
                     value={formData.chest_cm}
                     onChange={(e) => handleChange("chest_cm", e.target.value)}
@@ -255,6 +281,8 @@ export default function BodyMeasurementsPage() {
                     id="shoulders_cm"
                     type="number"
                     step="0.1"
+                    min="30"
+                    max="200"
                     placeholder="110.0"
                     value={formData.shoulders_cm}
                     onChange={(e) => handleChange("shoulders_cm", e.target.value)}
@@ -266,6 +294,8 @@ export default function BodyMeasurementsPage() {
                     id="neck_cm"
                     type="number"
                     step="0.1"
+                    min="20"
+                    max="80"
                     placeholder="38.0"
                     value={formData.neck_cm}
                     onChange={(e) => handleChange("neck_cm", e.target.value)}
@@ -284,6 +314,8 @@ export default function BodyMeasurementsPage() {
                     id="bicep_left_cm"
                     type="number"
                     step="0.1"
+                    min="10"
+                    max="80"
                     placeholder="34.0"
                     value={formData.bicep_left_cm}
                     onChange={(e) => handleChange("bicep_left_cm", e.target.value)}
@@ -295,6 +327,8 @@ export default function BodyMeasurementsPage() {
                     id="bicep_right_cm"
                     type="number"
                     step="0.1"
+                    min="10"
+                    max="80"
                     placeholder="34.5"
                     value={formData.bicep_right_cm}
                     onChange={(e) => handleChange("bicep_right_cm", e.target.value)}
@@ -306,6 +340,8 @@ export default function BodyMeasurementsPage() {
                     id="forearm_left_cm"
                     type="number"
                     step="0.1"
+                    min="10"
+                    max="60"
                     placeholder="28.0"
                     value={formData.forearm_left_cm}
                     onChange={(e) => handleChange("forearm_left_cm", e.target.value)}
@@ -317,6 +353,8 @@ export default function BodyMeasurementsPage() {
                     id="forearm_right_cm"
                     type="number"
                     step="0.1"
+                    min="10"
+                    max="60"
                     placeholder="28.5"
                     value={formData.forearm_right_cm}
                     onChange={(e) => handleChange("forearm_right_cm", e.target.value)}
@@ -335,7 +373,9 @@ export default function BodyMeasurementsPage() {
                     id="waist_cm"
                     type="number"
                     step="0.1"
-                    placeholder="78.0"
+                    min="30"
+                    max="200"
+                    placeholder="80.0"
                     value={formData.waist_cm}
                     onChange={(e) => handleChange("waist_cm", e.target.value)}
                   />
@@ -346,6 +386,8 @@ export default function BodyMeasurementsPage() {
                     id="hips_cm"
                     type="number"
                     step="0.1"
+                    min="30"
+                    max="200"
                     placeholder="92.0"
                     value={formData.hips_cm}
                     onChange={(e) => handleChange("hips_cm", e.target.value)}
@@ -364,6 +406,8 @@ export default function BodyMeasurementsPage() {
                     id="thigh_left_cm"
                     type="number"
                     step="0.1"
+                    min="20"
+                    max="100"
                     placeholder="52.0"
                     value={formData.thigh_left_cm}
                     onChange={(e) => handleChange("thigh_left_cm", e.target.value)}
@@ -375,6 +419,8 @@ export default function BodyMeasurementsPage() {
                     id="thigh_right_cm"
                     type="number"
                     step="0.1"
+                    min="20"
+                    max="100"
                     placeholder="52.5"
                     value={formData.thigh_right_cm}
                     onChange={(e) => handleChange("thigh_right_cm", e.target.value)}
@@ -386,6 +432,8 @@ export default function BodyMeasurementsPage() {
                     id="calf_left_cm"
                     type="number"
                     step="0.1"
+                    min="15"
+                    max="80"
                     placeholder="36.0"
                     value={formData.calf_left_cm}
                     onChange={(e) => handleChange("calf_left_cm", e.target.value)}
@@ -397,6 +445,8 @@ export default function BodyMeasurementsPage() {
                     id="calf_right_cm"
                     type="number"
                     step="0.1"
+                    min="15"
+                    max="80"
                     placeholder="36.5"
                     value={formData.calf_right_cm}
                     onChange={(e) => handleChange("calf_right_cm", e.target.value)}
@@ -413,8 +463,12 @@ export default function BodyMeasurementsPage() {
                 placeholder="Any observations, conditions, or context for this measurement..."
                 value={formData.notes}
                 onChange={(e) => handleChange("notes", e.target.value)}
+                maxLength={500}
                 rows={3}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                {formData.notes.length}/500 characters
+              </p>
             </div>
 
             <Button type="submit" disabled={saving} className="w-full sm:w-auto">

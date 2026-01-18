@@ -1,5 +1,7 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from "@neondatabase/serverless";import dotenv from "dotenv";
 
+// Load environment variables
+dotenv.config();
 async function seedData() {
   try {
     console.log('🌱 Seeding database...');

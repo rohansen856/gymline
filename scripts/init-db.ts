@@ -1,19 +1,36 @@
 import { neon } from "@neondatabase/serverless";
 import { readFileSync } from "fs";
 import { join } from "path";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 async function initDatabase() {
   try {
     console.log('🔄 Initializing database...');
     
-    const sql = neon(process.env.DATABASE_URL!);
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL environment variable is not set!');
+      console.log('\n💡 Please add your database connection string to the .env file:');
+      console.log('   DATABASE_URL="your-neon-connection-string"');
+      process.exit(1);
+    }
     
-    // Read the schema file
+    const sql = neon(process.env.DATABASE_URL);
+    
+    // Read the schema files
     const schemaPath = join(__dirname, '01-init-schema.sql');
+    const bodyMeasurementsPath = join(__dirname, '02-body-measurements.sql');
+    
     const schema = readFileSync(schemaPath, 'utf-8');
+    const bodyMeasurementsSchema = readFileSync(bodyMeasurementsPath, 'utf-8');
+    
+    // Combine schemas
+    const fullSchema = schema + '\n\n' + bodyMeasurementsSchema;
     
     // Remove comments and split by semicolon
-    const cleanedSchema = schema
+    const cleanedSchema = fullSchema
       .split('\n')
       .filter(line => !line.trim().startsWith('--'))
       .join('\n');
